@@ -15,7 +15,7 @@ def allowed_file(filename: str):
 def move_file():
     target = "/tmp/models--guillaumekln--faster-whisper-tiny"
     src = "/app/models--guillaumekln--faster-whisper-tiny"
-    if os.path.isdir():
+    if os.path.isdir(src):
         if not os.path.isdir(target):
             copy_tree(
                 src,
