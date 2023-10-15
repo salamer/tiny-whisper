@@ -1,5 +1,6 @@
-from flask import Flask, flash, request, redirect, url_for
+from flask import Flask, flash, request, redirect, url_for, jsonify
 from werkzeug.utils import secure_filename
+import os
 
 
 app = Flask(__name__)
@@ -61,6 +62,32 @@ def index():
     </form>
     '''
 
+def list_files(startpath):
+    tree = []
+    for root, dirs, files in os.walk(startpath):
+        level = root.replace(startpath, '').count(os.sep)
+        indent = ' ' * 4 * (level)
+        tree.append(
+            '{}{}/'.format(indent, os.path.basename(root))
+        )
+        subindent = ' ' * 4 * (level + 1)
+        for f in files:
+            tree.append(
+                '{}{}'.format(subindent, f)
+            )
+        inside = list_files(
+            os.path.join(startpath, dirs)
+        )
+        for i in inside:
+            tree.append(
+                '{}{}/'.format(indent, i)
+            )
+    return tree
+
+@app.route("/lookup")
+def lookup():
+    tree = list_files("/tmp")
+    return jsonify(tree)
 
 if __name__ == '__main__':
     app.run(debug=True, port=8000)
