@@ -48,6 +48,7 @@ def transcribe():
 
         rest = "Detected language '%s' with probability %f" % (
             info.language, info.language_probability)
+        
     return rest + "<br>" + "<br>".join(res)
 
 
