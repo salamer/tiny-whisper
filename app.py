@@ -19,7 +19,7 @@ def transcribe():
     from faster_whisper import WhisperModel
     model_size = "tiny"
     model = WhisperModel(model_size, device="cpu", compute_type="int8",
-                         download_root="/models", local_files_only=True)
+                         download_root="/app", local_files_only=True)
     print("finish load")
     # check if the post request has the file part
     if 'file' not in request.files:
@@ -89,7 +89,7 @@ def list_files(startpath):
 
 @app.route("/lookup")
 def lookup():
-    tree = list_files("/models")
+    tree = list_files("/app")
     return jsonify(tree)
 
 if __name__ == '__main__':

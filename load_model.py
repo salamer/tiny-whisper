@@ -1,7 +1,7 @@
 from faster_whisper import WhisperModel
 model_size = "tiny"
 model = WhisperModel(model_size, device="cpu",
-                     compute_type="int8", download_root="/models")
+                     compute_type="int8", download_root="/app")
 # warm up model
 segments, info = model.transcribe("test_audio.mp3", beam_size=5)
 print(segments, info)
