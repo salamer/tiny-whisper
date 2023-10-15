@@ -15,12 +15,13 @@ def allowed_file(filename: str):
 # TODO: make a bootstrap script, use bash to move folder
 def move_file():
     target = "/tmp/models--guillaumekln--faster-whisper-tiny"
+    target_tmp = "/tmp"
     src = "/app/models--guillaumekln--faster-whisper-tiny"
     if os.path.isdir(src):
         if not os.path.isdir(target):
             copy_tree(
                 src,
-                target,
+                target_tmp,
             )
 
 @app.route("/transcribe", methods=['POST'])
