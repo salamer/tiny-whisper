@@ -12,6 +12,7 @@ def allowed_file(filename: str):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+# TODO: make a bootstrap script, use bash to move folder
 def move_file():
     target = "/tmp/models--guillaumekln--faster-whisper-tiny"
     src = "/app/models--guillaumekln--faster-whisper-tiny"
