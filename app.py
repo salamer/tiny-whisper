@@ -1,7 +1,7 @@
 from flask import Flask, flash, request, redirect, url_for, jsonify
 from werkzeug.utils import secure_filename
 import os
-
+from distutils.dir_util import copy_tree
 
 app = Flask(__name__)
 
@@ -12,14 +12,24 @@ def allowed_file(filename: str):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def move_file():
+    target = "/tmp/models--guillaumekln--faster-whisper-tiny"
+    src = "/app/models--guillaumekln--faster-whisper-tiny"
+    if os.path.isdir():
+        if not os.path.isdir(target):
+            copy_tree(
+                src,
+                target,
+            )
 
 @app.route("/transcribe", methods=['POST'])
 def transcribe():
     print("start")
+    move_file()
     from faster_whisper import WhisperModel
     model_size = "tiny"
     model = WhisperModel(model_size, device="cpu", compute_type="int8",
-                         download_root="/app")
+                         download_root="/tmp")
     print("finish load")
     # check if the post request has the file part
     if 'file' not in request.files:
@@ -48,7 +58,7 @@ def transcribe():
 
         rest = "Detected language '%s' with probability %f" % (
             info.language, info.language_probability)
-        
+
     return rest + "<br>" + "<br>".join(res)
 
 
@@ -64,33 +74,50 @@ def index():
     </form>
     '''
 
+
 def list_files(startpath):
-    tree = []
+    tree = {}
     for root, dirs, files in os.walk(startpath):
         level = root.replace(startpath, '').count(os.sep)
-        indent = ' ' * 4 * (level)
+        # indent = ' ' * 4 * (level)
         tree.append(
-            '{}{}/'.format(indent, os.path.basename(root))
+            '{}'.format(os.path.basename(root))
         )
+        tree[
+            os.path.basename(root)
+        ] = []
         subindent = ' ' * 4 * (level + 1)
         for f in files:
-            tree.append(
-                '{}{}'.format(subindent, f)
+            tree[
+                os.path.basename(root)
+            ].append(
+                f
             )
         for d in dirs:
             inside = list_files(
                 os.path.join(startpath, d)
             )
             for i in inside:
-                tree.append(
-                    '{}{}/'.format(indent, i)
+                tree[
+                    os.path.basename(root)
+                ].append(
+                    i
                 )
     return tree
+
 
 @app.route("/lookup")
 def lookup():
     tree = list_files("/app")
     return jsonify(tree)
+
+
+@app.route("")
+def dirlookup():
+    dir_ = request.args.get('dir')
+    tree = list_files(dir_)
+    return jsonify(tree)
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=8000)
