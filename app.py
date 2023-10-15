@@ -15,11 +15,12 @@ def allowed_file(filename: str):
 
 @app.route("/transcribe", methods=['POST'])
 def transcribe():
+    print("start")
     from faster_whisper import WhisperModel
     model_size = "tiny"
     model = WhisperModel(model_size, device="cpu", compute_type="int8",
                          download_root="/tmp", local_files_only=True)
-
+    print("finish load")
     # check if the post request has the file part
     if 'file' not in request.files:
         flash('No file part')
@@ -38,7 +39,7 @@ def transcribe():
     filename = secure_filename(file.filename)
 
     # data = file.read()
-
+    print("start transcribe")
     segments, info = model.transcribe(file, beam_size=5)
     res = []
     for segment in segments:
