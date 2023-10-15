@@ -75,13 +75,14 @@ def list_files(startpath):
             tree.append(
                 '{}{}'.format(subindent, f)
             )
-        inside = list_files(
-            os.path.join(startpath, dirs)
-        )
-        for i in inside:
-            tree.append(
-                '{}{}/'.format(indent, i)
+        for d in dirs:
+            inside = list_files(
+                os.path.join(startpath, d)
             )
+            for i in inside:
+                tree.append(
+                    '{}{}/'.format(indent, i)
+                )
     return tree
 
 @app.route("/lookup")
