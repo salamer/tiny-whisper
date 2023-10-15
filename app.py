@@ -80,9 +80,9 @@ def list_files(startpath):
     for root, dirs, files in os.walk(startpath):
         level = root.replace(startpath, '').count(os.sep)
         # indent = ' ' * 4 * (level)
-        tree.append(
-            '{}'.format(os.path.basename(root))
-        )
+        # tree.append(
+        #     '{}'.format(os.path.basename(root))
+        # )
         tree[
             os.path.basename(root)
         ] = []
@@ -112,9 +112,11 @@ def lookup():
     return jsonify(tree)
 
 
-@app.route("")
+@app.route("/dirlookup")
 def dirlookup():
     dir_ = request.args.get('dir')
+    if not dir_:
+        return None
     tree = list_files(dir_)
     return jsonify(tree)
 
