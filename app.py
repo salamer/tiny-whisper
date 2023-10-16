@@ -31,7 +31,7 @@ def transcribe():
     from faster_whisper import WhisperModel
     model_size = "tiny"
     model = WhisperModel(model_size, device="cpu", compute_type="int8",
-                         download_root="/tmp")
+                         download_root="/tmp", local_files_only=True)
     print("finish load")
     # check if the post request has the file part
     if 'file' not in request.files:
@@ -88,11 +88,10 @@ def list_files(startpath):
         tree[
             os.path.basename(root)
         ] = []
+        data = []
         subindent = ' ' * 4 * (level + 1)
         for f in files:
-            tree[
-                os.path.basename(root)
-            ].append(
+            data.append(
                 f
             )
         for d in dirs:
@@ -100,11 +99,10 @@ def list_files(startpath):
                 os.path.join(startpath, d)
             )
             for i in inside:
-                tree[
-                    os.path.basename(root)
-                ].append(
+                data.append(
                     i
                 )
+        tree[os.path.basename(root)] = data
     return tree
 
 
