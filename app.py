@@ -2,6 +2,9 @@ from flask import Flask, flash, request, redirect, url_for, jsonify
 from werkzeug.utils import secure_filename
 import os
 from distutils.dir_util import copy_tree
+import logging
+logging.basicConfig()
+logging.getLogger().setLevel(logging.DEBUG)
 
 app = Flask(__name__)
 
