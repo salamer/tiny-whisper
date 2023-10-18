@@ -5,6 +5,7 @@ import asyncio
 import argparse
 from sniffio import current_async_library
 from pydub import AudioSegment
+from pydub.silence import split_on_silence
 
 
 parser = argparse.ArgumentParser()
@@ -34,14 +35,29 @@ async def transcribe(
 async def process_audio():
     audio = AudioSegment.from_file(args.file_path)
     intervals = 20 * 1000
-    for i in range(int(len(audio) / intervals)):
-        start_time = intervals * i
-        end_time = (intervals) * (i + 1)
-        if end_time > len(audio):
-            end_time = len(audio)
-        segment = audio[start_time: end_time]
+    # for i in range(int(len(audio) / intervals)):
+    #     start_time = intervals * i
+    #     end_time = (intervals) * (i + 1)
+    #     if end_time > len(audio):
+    #         end_time = len(audio)
+    #     segment = audio[start_time: end_time]
+    #     buffer = io.BytesIO()
+    #     segment.export(buffer, format="wav")
+    #     buffer.name = "audio.mp3"
+    #     print(buffer.getbuffer().nbytes / 1024 / 1024)
+    #     res = await transcribe(
+    #         "https://salamer-whisper-axnqlaey.leapcell.dev/transcribe_json",
+    #         buffer,
+    #     )
+    #     print(res)
+
+    chunks = split_on_silence(
+        audio, 
+        # min_silence_len=1000,
+    )
+    for chunk in chunks:
         buffer = io.BytesIO()
-        segment.export(buffer, format="wav")
+        chunk.export(buffer, format="wav")
         buffer.name = "audio.mp3"
         print(buffer.getbuffer().nbytes / 1024 / 1024)
         res = await transcribe(
